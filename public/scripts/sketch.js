@@ -4,6 +4,7 @@ let canvasHeight = document.documentElement.clientHeight;
 let boardSize = 10;
 let verticalColor = "red";
 let horizontalColor = "blue";
+let turn = 0;
 const board = [];
 
 
@@ -35,7 +36,16 @@ function mousePressed(event) {
 
 
 function handleClick(x, y) {
-
+    for (let i = 0; i < board.length; i++) {
+        const row = board[i];
+        for (let j = 0; j < row.length; j++) {
+            const hexagon = row[j];
+            if (hexagon.checkClick(x, y)) {
+                hexagon.setColor(turn++ % 2 ? verticalColor : horizontalColor)
+                return;
+            }
+        }
+    }
 }
 
 function initBoard(size) {
