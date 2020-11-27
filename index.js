@@ -16,6 +16,6 @@ app.get("/", (req, res, next) => {
 
 
 io.on("connection", socket => {
-    console.log(socket);
+    console.log(`${socket.id} connected`);
 })
 
