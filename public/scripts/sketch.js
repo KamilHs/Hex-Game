@@ -2,6 +2,7 @@ let socket;
 const canvasWidth = document.documentElement.clientWidth;
 const canvasHeight = document.documentElement.clientHeight;
 let config;
+let p;
 let turn = 0;
 const board = [];
 
@@ -23,8 +24,21 @@ function preload() {
     socket.on("connect", () => {
         socket.on("GAME:CONFIG", data => {
             config = data;
+            if (!p) {
+                p = createP(config.player ? "You are second" : "You are first");
+                p.style('color', config.player ? config.secondPlayerColor : config.firstPlayerColor);
+                p.addClass('absolute');
+            }
+
             initBoard(config.boardSize);
         });
+        socket.on("GAME:MOVE", data => {
+            for (let i = 0; i < config.boardSize; i++) {
+                for (let j = 0; j < config.boardSize; j++) {
+                    board[i][j].setData(data[i][j]);
+                }
+            }
+        })
     });
 }
 
@@ -46,8 +60,7 @@ function handleClick(x, y) {
         for (let j = 0; j < row.length; j++) {
             const hexagon = row[j];
             if (hexagon.checkClick(x, y)) {
-                hexagon.setColor(turn++ % 2 ? config.secondPlayerColor : config.firstPlayerColor)
-                return;
+                socket.emit("GAME:MOVE", { row: i, col: j });
             }
         }
     }

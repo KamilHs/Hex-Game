@@ -7,6 +7,9 @@ const Board = require("./models/board");
 
 const app = express();
 
+let joinedSockets = [];
+let board;
+
 const server = app.listen(process.env.PORT || 3000);
 
 const io = socketIO(server);
@@ -24,7 +27,26 @@ app.get("/", (req, res, next) => {
 
 io.on("connection", socket => {
     console.log(`${socket.id} connected`);
+    if (joinedSockets.length == 2)
+        return;
+    if (joinedSockets.length == 0)
+        board = new Board();
+    joinedSockets.push(socket.id);
 
-    socket.emit("GAME:CONFIG", config);
+    socket.emit("GAME:CONFIG", { ...config, player: joinedSockets.indexOf(socket.id) });
+
+    socket.on("GAME:MOVE", data => {
+        if (joinedSockets.indexOf(socket.id) != board.getTurn() % 2)
+            return;
+        if (!board.isCellEmpty(data))
+            return;
+        board.makeTurn(data);
+
+        io.emit("GAME:MOVE", board.getData());
+    })
+
+    socket.on("disconnecting", () => {
+        joinedSockets.splice(joinedSockets.indexOf(socket.id), 1);
+    })
 })
 

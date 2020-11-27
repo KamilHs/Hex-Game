@@ -55,9 +55,9 @@ class Hexagon {
         }
     }
 
-    setColor(color) {
+    setData({ color, empty }) {
         this.bgc = color;
-        this.isEmpty = false;
+        this.isEmpty = empty;
     }
 
     checkClick(x, y) {
