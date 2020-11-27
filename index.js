@@ -1,6 +1,9 @@
 const express = require("express");
 const socketIO = require("socket.io");
 
+const config = require("./config");
+const Board = require("./models/board");
+
 const app = express();
 
 const server = app.listen(process.env.PORT || 3000);
@@ -17,5 +20,7 @@ app.get("/", (req, res, next) => {
 
 io.on("connection", socket => {
     console.log(`${socket.id} connected`);
+
+    socket.emit("GAME:CONFIG", config);
 })
 

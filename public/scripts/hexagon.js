@@ -6,7 +6,7 @@ class Hexagon {
         this.row = row;
         this.col = col;
         this.isEmpty = true;
-        this.bgc = "white";
+        this.bgc = config.emptyBackground;
         this.initEdges();
 
     }
@@ -24,7 +24,7 @@ class Hexagon {
         }
     }
 
-    draw(boardSize, verticalColor, horizontalColor) {
+    draw() {
         fill(this.bgc);
         beginShape();
         this.edges.forEach(edge => vertex(edge.x, edge.y));
@@ -35,17 +35,17 @@ class Hexagon {
         for (let i = 0; i < 6; i++) {
             //Coloring edge sides
             if (
-                (this.row == boardSize - 1 && (i == 2 || i == 3)) ||
+                (this.row == config.boardSize - 1 && (i == 2 || i == 3)) ||
                 (this.row == 0 && (i == 0 || i == 5))) {
-                stroke(verticalColor);
+                stroke(config.verticalBorderColor);
             }
             else if (
-                (this.col == boardSize - 1 && (i == 0 || i == 1)) ||
+                (this.col == config.boardSize - 1 && (i == 0 || i == 1)) ||
                 (this.col == 0 && (i == 3 || i == 4))) {
-                stroke(horizontalColor);
+                stroke(config.horizontalBorderColor);
             }
             else {
-                stroke(0);
+                stroke(config.borderColor);
             }
             let x0 = this.edges[i].x;
             let y0 = this.edges[i].y;

@@ -1,32 +1,37 @@
 let socket;
-let canvasWidth = document.documentElement.clientWidth;
-let canvasHeight = document.documentElement.clientHeight;
-let boardSize = 10;
-let verticalColor = "red";
-let horizontalColor = "blue";
+const canvasWidth = document.documentElement.clientWidth;
+const canvasHeight = document.documentElement.clientHeight;
+let config;
 let turn = 0;
 const board = [];
 
 
 function setup() {
     createCanvas(canvasWidth, canvasHeight);
-    initBoard(boardSize);
 }
 
 
 function draw() {
-    renderBoard(boardSize, verticalColor, horizontalColor);
+    if (config)
+        renderBoard(config.boardSize, config.verticalBorderColor, config.horizontalBorderColor);
 }
 
 
 function preload() {
     socket = io();
+
+    socket.on("connect", () => {
+        socket.on("GAME:CONFIG", data => {
+            config = data;
+            initBoard(config.boardSize);
+        });
+    });
 }
 
 
 
-function renderBoard(size, vertColor, horColor) {
-    board.forEach(row => row.forEach(hexagon => hexagon.draw(size, vertColor, horColor)));
+function renderBoard() {
+    board.forEach(row => row.forEach(hexagon => hexagon.draw()));
 }
 
 
@@ -41,7 +46,7 @@ function handleClick(x, y) {
         for (let j = 0; j < row.length; j++) {
             const hexagon = row[j];
             if (hexagon.checkClick(x, y)) {
-                hexagon.setColor(turn++ % 2 ? verticalColor : horizontalColor)
+                hexagon.setColor(turn++ % 2 ? config.secondPlayerColor : config.firstPlayerColor)
                 return;
             }
         }
