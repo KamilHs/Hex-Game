@@ -39,7 +39,7 @@ function handleClick(x, y) {
 }
 
 function initBoard(size) {
-    let dx = (width > height ? height : width) / (size);
+    let dx = (width > height ? height : width) * 0.65 / (size);
     let side = dx * sin(PI / 6) / sin(2 * PI / 3);
     let dy = side + ((dx / 2) * sin(PI / 6) / sin(PI / 3));
 

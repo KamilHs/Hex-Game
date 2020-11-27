@@ -8,9 +8,11 @@ class Hexagon {
     }
 
     draw(boardSize, verticalColor, horizontalColor) {
+        strokeWeight(floor(this.a / 10) || 1)
         let angle = TWO_PI / 6;
         let offset = -TWO_PI / 4;
         for (let i = 0; i < 6; i++) {
+            //Coloring edge sides
             if (
                 (this.row == boardSize - 1 && (i == 2 || i == 3)) ||
                 (this.row == 0 && (i == 0 || i == 5))) {
@@ -20,7 +22,6 @@ class Hexagon {
                 (this.col == boardSize - 1 && (i == 0 || i == 1)) ||
                 (this.col == 0 && (i == 3 || i == 4))) {
                 stroke(horizontalColor);
-
             }
             else {
                 stroke(0);
