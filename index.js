@@ -36,13 +36,17 @@ io.on("connection", socket => {
     socket.emit("GAME:CONFIG", { ...config, player: joinedSockets.indexOf(socket.id) });
 
     socket.on("GAME:MOVE", data => {
+        if (board.finished) return;
         if (joinedSockets.indexOf(socket.id) != board.getTurn() % 2)
             return;
         if (!board.isCellEmpty(data))
             return;
         board.makeTurn(data);
-
+        if (board.checkWinner(data)) {
+            io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
+        }
         io.emit("GAME:MOVE", board.getData());
+
     })
 
     socket.on("disconnecting", () => {

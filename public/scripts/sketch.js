@@ -24,11 +24,11 @@ function preload() {
     socket.on("connect", () => {
         socket.on("GAME:CONFIG", data => {
             config = data;
-            if (!p) {
-                p = createP(config.player ? "You are second" : "You are first");
-                p.style('color', config.player ? config.secondPlayerColor : config.firstPlayerColor);
-                p.addClass('absolute');
-            }
+            if (p) p.remove();
+            p = createP(config.player ? "You are second" : "You are first");
+            p.style('color', config.player ? config.secondPlayerColor : config.firstPlayerColor);
+            p.addClass('absolute');
+
 
             initBoard(config.boardSize);
         });
@@ -39,6 +39,10 @@ function preload() {
                 }
             }
         })
+
+        socket.on("GAME:MESSAGE", console.log);
+
+        socket.on("GAME:FINISHED", renderWinnerMessage)
     });
 }
 
@@ -85,4 +89,11 @@ function initBoard(size) {
         }
         curY += dy;
     }
+}
+
+function renderWinnerMessage(playerColor) {
+    let message = createDiv(`<p>Winner is ${playerColor}</p>`);
+
+    message.addClass("winner");
+    message.style('color', playerColor);
 }

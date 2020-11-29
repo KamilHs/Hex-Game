@@ -24,11 +24,7 @@ class Hexagon {
     getData() {
         return {
             empty: this.empty,
-            color: this.empty
-                ? config.emptyBackground
-                : this.color
-                    ? config.secondPlayerColor
-                    : config.firstPlayerColor
+            color: this.color
         }
     }
 }
