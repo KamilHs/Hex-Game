@@ -17,6 +17,7 @@ const io = socketIO(server);
 app.set('view engine', 'ejs');
 app.set('views', 'public/views');
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -26,8 +27,50 @@ app.get("/", (req, res, next) => {
 
 app.get("/create", (req, res, next) => {
     res.render("create", {
-        config
+        config,
+        errors: []
     });
+})
+
+app.post("/create", (req, res, next) => {
+    const errors = [];
+    if (!req.body.boardSize)
+        errors.push(`Board size is required`);
+    else if (req.body.boardSize < config.minSize || req.body.boardSize > config.maxSize)
+        errors.push(`Board size should be between ${config.minSize} and ${config.maxSize}`);
+    if (!req.body.firstPlayerColor || !req.body.secondPlayerColor)
+        errors.push("Players colors required");
+    else if (req.body.firstPlayerColor == req.body.secondPlayerColor)
+        errors.push("Players colors can't be the same");
+    if (!req.body.emptyBackground)
+        errors.push(`Background color is required`);
+    else if (req.body.emptyBackground == req.body.firstPlayerColor ||
+        req.body.emptyBackground == req.body.secondPlayerColor)
+        errors.push("Background color can't be the player color");
+    if (!req.body.borderColor)
+        errors.push(`Border color is required`);
+    else if (
+        req.body.borderColor == req.body.firstPlayerColor ||
+        req.body.borderColor == req.body.secondPlayerColor)
+        errors.push("Border color can't be the player color");
+    if (req.body.borderColor && req.body.borderColor == req.body.emptyBackground)
+        errors.push("Border color can't be the background color");
+
+
+    if (errors.length != 0) {
+        res.render("create", {
+            config: {
+                firstPlayerColor: req.body.firstPlayerColor || config.firstPlayerColor,
+                secondPlayerColor: req.body.secondPlayerColor || config.secondPlayerColor,
+                borderColor: req.body.borderColor || config.borderColor,
+                emptyBackground: req.body.emptyBackground || config.emptyBackground,
+                boardSize: req.body.boardSize || config.boardSize,
+                minSize: config.minSize,
+                maxSize: config.maxSize,
+            },
+            errors
+        })
+    }
 })
 
 

@@ -21,34 +21,44 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8">
+
+                    <% if(errors.length > 0){ %>
+                    <ul class="errors">
+                        <% errors.forEach(error=>{ %>
+                        <li class="error"><%=error %></li>
+                        <%  }) %>
+                    </ul>
+
+                    <% } %>
+
                     <form action="/create" class="create-game-form" method="POST">
                         <div class="d-flex">
                             <div class="create-game-form__group w-25 p-1 mb-3">
-                                <label for="first_player_color" class="create-game-form__label">Player 1</label>
-                                <input id="first_player_color" name="first_player_color" type="color"
+                                <label for="firstPlayerColor" class="create-game-form__label">Player 1</label>
+                                <input id="firstPlayerColor" name="firstPlayerColor" type="color"
                                     value="<%= config.firstPlayerColor %>" class="create-game-form__control w-100">
                             </div>
                             <div class="create-game-form__group w-25 p-1 mb-3">
-                                <label for="second_player_color" class="create-game-form__label">Player 2</label>
-                                <input id="second_player_color" name="second_player_color" type="color"
+                                <label for="secondPlayerColor" class="create-game-form__label">Player 2</label>
+                                <input id="secondPlayerColor" name="secondPlayerColor" type="color"
                                     value="<%= config.secondPlayerColor %>" class="create-game-form__control w-100">
                             </div>
                             <div class="create-game-form__group w-25 p-1 mb-3">
-                                <label for="border_color" class="create-game-form__label">Border</label>
-                                <input id="border_color" name="border_color" type="color"
+                                <label for="borderColor" class="create-game-form__label">Border</label>
+                                <input id="borderColor" name="borderColor" type="color"
                                     value="<%= config.borderColor %>" class="create-game-form__control w-100">
                             </div>
                             <div class="create-game-form__group w-25 p-1 mb-3">
-                                <label for="bgc_color" class="create-game-form__label">Background</label>
-                                <input id="bgc_color" name="bgc_color" type="color" value="<%= config.emptyBackground%>"
-                                    class="create-game-form__control w-100">
+                                <label for="emptyBackground" class="create-game-form__label">Background</label>
+                                <input id="emptyBackground" name="emptyBackground" type="color"
+                                    value="<%= config.emptyBackground%>" class="create-game-form__control w-100">
                             </div>
                         </div>
                         <div class="create-game-form__group p-1">
-                            <label for="board_size" class="create-game-form__label">Board Size</label>
+                            <label for="boardSize" class="create-game-form__label">Board Size</label>
                             <input class="create-game-form__control w-100" min="<%= config.minSize %>"
                                 max="<%= config.maxSize %>" value="<%= config.boardSize %>" step="1" type="range"
-                                name="board_size" id="board_size">
+                                name="boardSize" id="boardSize">
                         </div>
 
                         <div id="canvas-container"></div>

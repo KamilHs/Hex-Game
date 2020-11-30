@@ -37,3 +37,10 @@ main {
 .create-game-form__submit:hover {
     background-position-x: -100%;
 }
+
+.errors {
+    list-style: none;
+    background-color: rgb(231, 146, 146);
+    padding: 10px;
+    border-radius: 6px;
+}

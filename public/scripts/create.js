@@ -20,11 +20,11 @@ function draw() {
 
 function updateConfig() {
     let temp = {}
-    temp.firstPlayerColor = select("#first_player_color").elt.value;
-    temp.secondPlayerColor = select("#second_player_color").elt.value;
-    temp.borderColor = select("#border_color").elt.value;
-    temp.emptyBackground = select("#bgc_color").elt.value;
-    temp.boardSize = select("#board_size").elt.value;
+    temp.firstPlayerColor = select("#firstPlayerColor").elt.value;
+    temp.secondPlayerColor = select("#secondPlayerColor").elt.value;
+    temp.borderColor = select("#borderColor").elt.value;
+    temp.emptyBackground = select("#emptyBackground").elt.value;
+    temp.boardSize = select("#boardSize").elt.value;
 
     let hasChanged = false;
     for (const key in temp) {
