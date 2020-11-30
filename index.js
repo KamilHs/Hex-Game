@@ -1,21 +1,15 @@
 require('dotenv').config();
 const express = require("express");
-const path = require('path');
 const socketIO = require("socket.io");
+const path = require("path");
 
 const config = require("./config");
 const isHexColor = require("./helpers/isHexColor");
 const idGenerator = require("./helpers/idGenerator");
 
-const sequelize = require("./db");
-
+const boards = {};
 const Board = require("./classes/board");
-const Game = require("./models/game");
 const app = express();
-
-let joinedSockets = [];
-let board;
-
 
 const server = app.listen(process.env.PORT || 3000);
 
@@ -27,34 +21,37 @@ app.set('views', 'public/views');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-sequelize.sync().then(() => {
-    io.on("connection", socket => {
-        console.log(`${socket.id} connected`);
-        if (joinedSockets.length == 2)
+io.on("connection", async socket => {
+    console.log(`${socket.id} connected`);
+    const roomId = socket.handshake.query.roomId;
+    let connectedSockets = await io.in(roomId).allSockets();
+
+    if (connectedSockets.size == 2) return;
+
+    socket.join(roomId);
+    connectedSockets = await io.in(roomId).allSockets();
+
+    let board = boards[roomId];
+
+    socket.emit("GAME:CONFIG", { ...config, player: [...connectedSockets].indexOf(socket.id) });
+
+    socket.on("GAME:MOVE", async data => {
+        let connectedSockets = await io.in(roomId).allSockets();
+
+        if (board.finished || connectedSockets.size != 2) return;
+        if ([...connectedSockets].indexOf(socket.id) != board.getTurn() % 2)
             return;
-        if (joinedSockets.length == 0)
-            board = new Board();
-        joinedSockets.push(socket.id);
+        if (!board.isCellEmpty(data))
+            return;
+        board.makeTurn(data);
+        if (board.checkWinner(data)) {
+            io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
+        }
+        io.emit("GAME:MOVE", board.getData());
+    })
 
-        socket.emit("GAME:CONFIG", { ...config, player: joinedSockets.indexOf(socket.id) });
-
-        socket.on("GAME:MOVE", data => {
-            if (board.finished) return;
-            if (joinedSockets.indexOf(socket.id) != board.getTurn() % 2)
-                return;
-            if (!board.isCellEmpty(data))
-                return;
-            board.makeTurn(data);
-            if (board.checkWinner(data)) {
-                io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
-            }
-            io.emit("GAME:MOVE", board.getData());
-
-        })
-
-        socket.on("disconnecting", () => {
-            joinedSockets.splice(joinedSockets.indexOf(socket.id), 1);
-        })
+    socket.on("disconnecting", () => {
+        socket.leave(roomId);
     })
 })
 
@@ -67,7 +64,8 @@ app.get("/create", (req, res, next) => {
 })
 
 app.get("/:id", async (req, res, next) => {
-    if (!await Game.findByPk(req.params.id)) return res.redirect("/create");
+    console.log(req.params.id);
+    if (!boards[req.params.id]) return res.redirect("/create");
     res.render("index");
 })
 
@@ -114,8 +112,13 @@ app.post("/create", (req, res, next) => {
             errors
         });
     }
-
-    Game
-        .create({ Id: idGenerator(24) })
-        .then(game => res.redirect(`/${game.Id}`));
+    let id = idGenerator(24)
+    boards[id] = new Board({
+        firstPlayerColor: req.body.firstPlayerColor,
+        secondPlayerColor: req.body.secondPlayerColor,
+        borderColor: req.body.borderColor,
+        emptyBackground: req.body.emptyBackground,
+        boardSize: req.body.boardSize,
+    })
+    res.redirect(`/${id}`);
 })

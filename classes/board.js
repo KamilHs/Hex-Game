@@ -1,21 +1,18 @@
 const Hexagon = require("./hexagon");
-const config = require("../config");
-const { firstPlayerColor } = require("../config");
 
 class Board {
-    constructor() {
-        this.size = config.boardSize;
+    constructor(config) {
+        this.config = config;
         this.turn = 0;
         this.finished = false;
         this.initHexagons();
     }
     initHexagons() {
         this.hexagons = [];
-
-        for (let i = 0; i < this.size; i++) {
+        for (let i = 0; i < this.config.boardSize; i++) {
             this.hexagons[i] = [];
-            for (let j = 0; j < this.size; j++) {
-                this.hexagons[i][j] = new Hexagon(i, j, config.emptyBackground)
+            for (let j = 0; j < this.config.boardSize; j++) {
+                this.hexagons[i][j] = new Hexagon(i, j, this.config.emptyBackground)
             }
         }
     }
@@ -29,7 +26,7 @@ class Board {
     }
 
     getCurrentPlayerColor() {
-        return this.turn % 2 ? config.secondPlayerColor : config.firstPlayerColor;
+        return this.turn % 2 ? this.config.secondPlayerColor : this.config.firstPlayerColor;
     }
 
     isCellEmpty({ row, col }) {
@@ -39,9 +36,9 @@ class Board {
     getData() {
         const data = [];
 
-        for (let i = 0; i < this.size; i++) {
+        for (let i = 0; i < this.config.boardSize; i++) {
             data[i] = [];
-            for (let j = 0; j < this.size; j++) {
+            for (let j = 0; j < this.config.boardSize; j++) {
                 data[i][j] = this.hexagons[i][j].getData();
             }
         }
@@ -49,7 +46,7 @@ class Board {
     }
 
     checkWinner({ row, col }) {
-        let color = this.turn % 2 ? config.secondPlayerColor : config.firstPlayerColor;
+        let color = this.turn % 2 ? this.config.secondPlayerColor : this.config.firstPlayerColor;
         let isHorizontal = this.turn % 2;
         let stack = [{ row, col }];
         let visited = [];
@@ -58,20 +55,20 @@ class Board {
 
         while (stack.length != 0) {
             let current = stack.pop();
-            if (visited[current.row * config.boardSize + current.col])
+            if (visited[current.row * this.config.boardSize + current.col])
                 continue;
-            visited[current.row * config.boardSize + current.col] = true;
+            visited[current.row * this.config.boardSize + current.col] = true;
 
             if (isHorizontal) {
                 if (current.col == 0 && !edges[0])
                     edges[0] = true;
-                if (current.col == config.boardSize - 1 && !edges[1])
+                if (current.col == this.config.boardSize - 1 && !edges[1])
                     edges[1] = true;
             }
             else {
                 if (current.row == 0 && !edges[0])
                     edges[0] = true;
-                if (current.row == config.boardSize - 1 && !edges[1])
+                if (current.row == this.config.boardSize - 1 && !edges[1])
                     edges[1] = true;
             }
 
@@ -97,8 +94,8 @@ class Board {
         neighbours.push({ row: row + 1, col: col - 1 });
 
         return neighbours.filter(n => (
-            n.row >= 0 && n.row < config.boardSize &&
-            n.col >= 0 && n.col < config.boardSize &&
+            n.row >= 0 && n.row < this.config.boardSize &&
+            n.col >= 0 && n.col < this.config.boardSize &&
             this.hexagons[n.row][n.col].getColor() == color
         ))
     }
