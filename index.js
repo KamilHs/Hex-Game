@@ -24,6 +24,12 @@ app.get("/", (req, res, next) => {
     res.render("index");
 })
 
+app.get("/create", (req, res, next) => {
+    res.render("create", {
+        config
+    });
+})
+
 
 io.on("connection", socket => {
     console.log(`${socket.id} connected`);

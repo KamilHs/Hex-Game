@@ -1,0 +1,39 @@
+header {
+    padding: 10px 0;
+    background: -webkit-linear-gradient(left, red, blue);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.heading {
+    text-align: center;
+    font-size: 2rem;
+}
+
+main {
+    margin-bottom: 100px;
+}
+
+.create-game-form {
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+
+.create-game-form__submit {
+    background: -webkit-linear-gradient(left, red, blue);
+    border: none;
+    width: 100%;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    background-size: 200%;
+    font-size: 1.5rem;
+    border-radius: 6px;
+}
+
+.create-game-form__submit:hover {
+    background-position-x: -100%;
+}

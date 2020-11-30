@@ -30,7 +30,6 @@ class Hexagon {
         this.edges.forEach(edge => vertex(edge.x, edge.y));
         endShape(CLOSE)
 
-
         strokeWeight(floor(this.a / 10) || 1)
         for (let i = 0; i < 6; i++) {
             //Coloring edge sides
