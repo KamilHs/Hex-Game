@@ -4,7 +4,7 @@ const socketIO = require("socket.io");
 
 const config = require("./config");
 const isHexColor = require("./helpers/isHexColor");
-const Board = require("./models/board");
+const Board = require("./classes/board");
 
 const app = express();
 
