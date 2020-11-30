@@ -143,6 +143,7 @@ function getPlayerConfig(connectedSockets, id, board) {
         message = "Waiting for someone to join...";
         color = "black";
     }
+
     else {
         if ([...connectedSockets].indexOf(id) == board.getTurn() % 2) {
             message = "Your Turn";

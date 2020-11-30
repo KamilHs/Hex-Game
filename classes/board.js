@@ -25,6 +25,7 @@ class Board {
         return this.turn;
     }
 
+
     makeTurn({ row, col }) {
         this.hexagons[row][col].setColor(this.getCurrentPlayerColor());
     }
