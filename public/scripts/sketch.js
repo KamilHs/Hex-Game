@@ -19,10 +19,11 @@ function draw() {
 function preload() {
     socket.on("connect", () => {
         socket.on("GAME:CONFIG", data => {
+            console.log(data);
             config = data;
             if (p) p.remove();
-            p = createP(config.player ? "You are second" : "You are first");
-            p.style('color', config.player ? config.secondPlayerColor : config.firstPlayerColor);
+            p = createP(config.message);
+            p.style('color', config.color);
             p.addClass('absolute');
 
             board = new Board(config.boardSize);

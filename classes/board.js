@@ -17,6 +17,10 @@ class Board {
         }
     }
 
+    getConfig() {
+        return this.config;
+    }
+
     getTurn() {
         return this.turn;
     }
@@ -27,6 +31,9 @@ class Board {
 
     getCurrentPlayerColor() {
         return this.turn % 2 ? this.config.secondPlayerColor : this.config.firstPlayerColor;
+    }
+    getNotCurrentPlayerColor() {
+        return this.turn % 2 ? this.config.firstPlayerColor : this.config.secondPlayerColor;
     }
 
     isCellEmpty({ row, col }) {

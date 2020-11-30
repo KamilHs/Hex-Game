@@ -33,7 +33,11 @@ io.on("connection", async socket => {
 
     let board = boards[roomId];
 
-    socket.emit("GAME:CONFIG", { ...config, player: [...connectedSockets].indexOf(socket.id) });
+
+    [...connectedSockets].forEach(id => {
+        io.of("/").sockets.get(id).emit("GAME:CONFIG", getPlayerConfig(connectedSockets, id, board))
+    })
+
 
     socket.on("GAME:MOVE", async data => {
         let connectedSockets = await io.in(roomId).allSockets();
@@ -45,13 +49,17 @@ io.on("connection", async socket => {
             return;
         board.makeTurn(data);
         if (board.checkWinner(data)) {
-            io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
+            io.to(roomId).emit("GAME:FINISHED", board.getCurrentPlayerColor())
         }
-        io.emit("GAME:MOVE", board.getData());
+        [...connectedSockets].forEach(id => {
+            io.of("/").sockets.get(id).emit("GAME:CONFIG", getPlayerConfig(connectedSockets, id, board))
+        })
+        io.to(roomId).emit("GAME:MOVE", board.getData());
     })
 
-    socket.on("disconnecting", () => {
+    socket.on("disconnecting", async () => {
         socket.leave(roomId);
+        boards[roomId] = null;
     })
 })
 
@@ -119,6 +127,31 @@ app.post("/create", (req, res, next) => {
         borderColor: req.body.borderColor,
         emptyBackground: req.body.emptyBackground,
         boardSize: req.body.boardSize,
+        verticalBorderColor: req.body.firstPlayerColor,
+        horizontalBorderColor: req.body.secondPlayerColor
     })
     res.redirect(`/${id}`);
 })
+
+
+app.use((req, res, next) => res.redirect("/create"));
+
+function getPlayerConfig(connectedSockets, id, board) {
+    let message;
+    let color;
+    if (connectedSockets.size == 1) {
+        message = "Waiting for someone to join...";
+        color = "black";
+    }
+    else {
+        if ([...connectedSockets].indexOf(id) == board.getTurn() % 2) {
+            message = "Your Turn";
+            color = board.getCurrentPlayerColor();
+        }
+        else {
+            message = "Waiting for Opponent";
+            color = board.getNotCurrentPlayerColor();
+        }
+    }
+    return { ...board.getConfig(), message, color };
+}
