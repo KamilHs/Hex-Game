@@ -25,7 +25,10 @@ class Hexagon {
     }
 
     draw() {
-        fill(this.bgc);
+        if (this.isEmpty)
+            fill(config.emptyBackground);
+        else
+            fill(this.bgc);
         beginShape();
         this.edges.forEach(edge => vertex(edge.x, edge.y));
         endShape(CLOSE)

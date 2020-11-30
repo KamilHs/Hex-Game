@@ -9,9 +9,10 @@ function setup() {
 }
 
 function draw() {
-    background(255);
-    if (config) {
+    if (config && shouldBeRendered) {
+        background(255);
         board.draw();
+        shouldBeRendered = false;
     }
     updateConfig();
 }
@@ -38,9 +39,12 @@ function updateConfig() {
             verticalBorderColor: temp.firstPlayerColor,
             horizontalBorderColor: temp.secondPlayerColor
         };
-        board = new Board(config.boardSize);
+        if (!board || board.size != config.boardSize)
+            board = new Board(config.boardSize);
+
         board.hexagons[0][0].bgc = config.firstPlayerColor;
         board.hexagons[config.boardSize - 1][config.boardSize - 1].bgc = config.secondPlayerColor;
 
+        shouldBeRendered = true;
     }
 }

@@ -1,5 +1,3 @@
-const config = require("../config");
-
 class Hexagon {
     constructor(row, col, color) {
         this.row = row;
