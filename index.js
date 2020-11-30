@@ -3,6 +3,7 @@ const path = require('path');
 const socketIO = require("socket.io");
 
 const config = require("./config");
+const isHexColor = require("./helpers/isHexColor");
 const Board = require("./models/board");
 
 const app = express();
@@ -38,24 +39,28 @@ app.post("/create", (req, res, next) => {
         errors.push(`Board size is required`);
     else if (req.body.boardSize < config.minSize || req.body.boardSize > config.maxSize)
         errors.push(`Board size should be between ${config.minSize} and ${config.maxSize}`);
-    if (!req.body.firstPlayerColor || !req.body.secondPlayerColor)
+
+    if (!req.body.firstPlayerColor || !isHexColor(req.body.firstPlayerColor) ||
+        !req.body.secondPlayerColor || !isHexColor(req.body.secondPlayerColor))
         errors.push("Players colors required");
     else if (req.body.firstPlayerColor == req.body.secondPlayerColor)
         errors.push("Players colors can't be the same");
-    if (!req.body.emptyBackground)
+
+    if (!req.body.emptyBackground || !isHexColor(req.body.emptyBackground))
         errors.push(`Background color is required`);
     else if (req.body.emptyBackground == req.body.firstPlayerColor ||
         req.body.emptyBackground == req.body.secondPlayerColor)
         errors.push("Background color can't be the player color");
-    if (!req.body.borderColor)
+
+    if (!req.body.borderColor || !isHexColor(req.body.borderColor))
         errors.push(`Border color is required`);
     else if (
         req.body.borderColor == req.body.firstPlayerColor ||
         req.body.borderColor == req.body.secondPlayerColor)
         errors.push("Border color can't be the player color");
+
     if (req.body.borderColor && req.body.borderColor == req.body.emptyBackground)
         errors.push("Border color can't be the background color");
-
 
     if (errors.length != 0) {
         res.render("create", {
