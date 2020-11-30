@@ -5,8 +5,8 @@ class Hexagon {
         this.a = a;
         this.row = row;
         this.col = col;
-        this.isEmpty = true;
-        this.bgc = config.emptyBackground;
+        this.empty = true;
+        this.color = config.emptyBackground;
         this.initEdges();
 
     }
@@ -25,10 +25,10 @@ class Hexagon {
     }
 
     draw() {
-        if (this.isEmpty)
+        if (this.empty)
             fill(config.emptyBackground);
         else
-            fill(this.bgc);
+            fill(this.color);
         beginShape();
         this.edges.forEach(edge => vertex(edge.x, edge.y));
         endShape(CLOSE)
@@ -58,8 +58,13 @@ class Hexagon {
     }
 
     setData({ color, empty }) {
-        this.bgc = color;
-        this.isEmpty = empty;
+        this.color = color;
+        this.empty = empty;
+    }
+
+    setColor(color) {
+        this.empty = false;
+        this.color = color;
     }
 
     checkClick(x, y) {
@@ -67,6 +72,6 @@ class Hexagon {
         let d = Math.hypot(x - this.x, y - this.y);
         let a = Math.atan2(this.y - y, x - this.x);
 
-        return (d <= (this.a + m) / 2 + Math.cos(a * 6) * (this.a - m) / 2) && this.isEmpty;
+        return (d <= (this.a + m) / 2 + Math.cos(a * 6) * (this.a - m) / 2) && this.empty;
     }
 }

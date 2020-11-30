@@ -7,7 +7,7 @@ class Board {
     initHexagons() {
         this.hexagons = [];
         for (let i = 0; i < this.size; i++) {
-            let dx = (width > height ? height : width) * 0.65 / (this.size);
+            let dx = (width > height ? height : width * 0.65) / (this.size);
             let side = dx * sin(PI / 6) / sin(2 * PI / 3);
             let dy = side + ((dx / 2) * sin(PI / 6) / sin(PI / 3));
 

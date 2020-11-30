@@ -3,7 +3,7 @@ let config = null;
 
 function setup() {
     const container = select('#canvas-container');
-    const canvas = createCanvas(container.width, 400);
+    const canvas = createCanvas(container.width, container.width * 0.65);
     canvas.parent(container);
     updateConfig();
 }
@@ -42,8 +42,9 @@ function updateConfig() {
         if (!board || board.size != config.boardSize)
             board = new Board(config.boardSize);
 
-        board.hexagons[0][0].bgc = config.firstPlayerColor;
-        board.hexagons[config.boardSize - 1][config.boardSize - 1].bgc = config.secondPlayerColor;
+
+        board.hexagons[0][0].setColor(config.firstPlayerColor);
+        board.hexagons[config.boardSize - 1][config.boardSize - 1].setColor(config.secondPlayerColor);
 
         shouldBeRendered = true;
     }
