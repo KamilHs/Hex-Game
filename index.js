@@ -5,11 +5,13 @@ const socketIO = require("socket.io");
 const config = require("./config");
 const isHexColor = require("./helpers/isHexColor");
 const Board = require("./classes/board");
+const sequelize = require("./db");
 
 const app = express();
 
 let joinedSockets = [];
 let board;
+
 
 const server = app.listen(process.env.PORT || 3000);
 
@@ -20,6 +22,37 @@ app.set('views', 'public/views');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+sequelize.sync().then(() => {
+    io.on("connection", socket => {
+        console.log(`${socket.id} connected`);
+        if (joinedSockets.length == 2)
+            return;
+        if (joinedSockets.length == 0)
+            board = new Board();
+        joinedSockets.push(socket.id);
+
+        socket.emit("GAME:CONFIG", { ...config, player: joinedSockets.indexOf(socket.id) });
+
+        socket.on("GAME:MOVE", data => {
+            if (board.finished) return;
+            if (joinedSockets.indexOf(socket.id) != board.getTurn() % 2)
+                return;
+            if (!board.isCellEmpty(data))
+                return;
+            board.makeTurn(data);
+            if (board.checkWinner(data)) {
+                io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
+            }
+            io.emit("GAME:MOVE", board.getData());
+
+        })
+
+        socket.on("disconnecting", () => {
+            joinedSockets.splice(joinedSockets.indexOf(socket.id), 1);
+        })
+    })
+})
 
 
 app.get("/", (req, res, next) => {
@@ -77,34 +110,3 @@ app.post("/create", (req, res, next) => {
         })
     }
 })
-
-
-io.on("connection", socket => {
-    console.log(`${socket.id} connected`);
-    if (joinedSockets.length == 2)
-        return;
-    if (joinedSockets.length == 0)
-        board = new Board();
-    joinedSockets.push(socket.id);
-
-    socket.emit("GAME:CONFIG", { ...config, player: joinedSockets.indexOf(socket.id) });
-
-    socket.on("GAME:MOVE", data => {
-        if (board.finished) return;
-        if (joinedSockets.indexOf(socket.id) != board.getTurn() % 2)
-            return;
-        if (!board.isCellEmpty(data))
-            return;
-        board.makeTurn(data);
-        if (board.checkWinner(data)) {
-            io.emit("GAME:FINISHED", board.getCurrentPlayerColor())
-        }
-        io.emit("GAME:MOVE", board.getData());
-
-    })
-
-    socket.on("disconnecting", () => {
-        joinedSockets.splice(joinedSockets.indexOf(socket.id), 1);
-    })
-})
-
