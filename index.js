@@ -7,7 +7,7 @@ const config = require("./config");
 const isHexColor = require("./helpers/isHexColor");
 const idGenerator = require("./helpers/idGenerator");
 
-const boards = {};
+const boards = { count: 0 };
 const Board = require("./classes/board");
 const app = express();
 
@@ -79,6 +79,8 @@ app.get("/:id", async (req, res, next) => {
 
 app.post("/create", (req, res, next) => {
     const errors = [];
+    if (boards.count >= 25)
+        errors.push("Maximum number of rooms reached. Try later");
     if (!req.body.boardSize)
         errors.push(`Board size is required`);
     else if (req.body.boardSize < config.minSize || req.body.boardSize > config.maxSize)
@@ -130,6 +132,7 @@ app.post("/create", (req, res, next) => {
         verticalBorderColor: req.body.firstPlayerColor,
         horizontalBorderColor: req.body.secondPlayerColor
     })
+    boards.count++;
     res.redirect(`/${id}`);
 })
 
