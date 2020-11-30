@@ -1,19 +1,20 @@
-const { DataTypes } = require("sequelize/types");
+const Sequelize = require('sequelize');
 const sequelize = require("../db");
+
 
 const Game = sequelize.define("Game", {
     Id: {
-        type: DataTypes.STRING,
+        type: Sequelize.DataTypes.STRING,
         primaryKey: true,
         allowNull: false
     },
     firstPlayer: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true
     },
     secondPlayer: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true
     }
 })
 

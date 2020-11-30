@@ -5,9 +5,12 @@ const socketIO = require("socket.io");
 
 const config = require("./config");
 const isHexColor = require("./helpers/isHexColor");
-const Board = require("./classes/board");
+const idGenerator = require("./helpers/idGenerator");
+
 const sequelize = require("./db");
 
+const Board = require("./classes/board");
+const Game = require("./models/game");
 const app = express();
 
 let joinedSockets = [];
@@ -56,15 +59,16 @@ sequelize.sync().then(() => {
 })
 
 
-app.get("/", (req, res, next) => {
-    res.render("index");
-})
-
 app.get("/create", (req, res, next) => {
     res.render("create", {
         config,
         errors: []
     });
+})
+
+app.get("/:id", async (req, res, next) => {
+    if (!await Game.findByPk(req.params.id)) return res.redirect("/create");
+    res.render("index");
 })
 
 app.post("/create", (req, res, next) => {
@@ -97,7 +101,7 @@ app.post("/create", (req, res, next) => {
         errors.push("Border color can't be the background color");
 
     if (errors.length != 0) {
-        res.render("create", {
+        return res.render("create", {
             config: {
                 firstPlayerColor: req.body.firstPlayerColor || config.firstPlayerColor,
                 secondPlayerColor: req.body.secondPlayerColor || config.secondPlayerColor,
@@ -108,6 +112,10 @@ app.post("/create", (req, res, next) => {
                 maxSize: config.maxSize,
             },
             errors
-        })
+        });
     }
+
+    Game
+        .create({ Id: idGenerator(24) })
+        .then(game => res.redirect(`/${game.Id}`));
 })
