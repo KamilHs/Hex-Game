@@ -13,7 +13,7 @@ class Hexagon {
     initEdges() {
         // Top, right top, bottom right, bottom, left bottom, left top
         this.edges = [];
-        let offset = -TWO_PI / 4;
+        let offset = -TWO_PI / 4
         let angle = TWO_PI / 6;
 
         for (let i = 0; i < 6; i++) {

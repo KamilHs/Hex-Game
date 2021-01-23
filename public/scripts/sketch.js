@@ -19,7 +19,6 @@ function draw() {
 function preload() {
     socket.on("connect", () => {
         socket.on("GAME:CONFIG", data => {
-            console.log(data);
             config = data;
             if (p) p.remove();
             p = createP(config.message);

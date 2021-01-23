@@ -71,8 +71,7 @@ app.get("/create", (req, res, next) => {
     });
 })
 
-app.get("/:id", async (req, res, next) => {
-    console.log(req.params.id);
+app.get("/:id", (req, res, next) => {
     if (!boards[req.params.id]) return res.redirect("/create");
     res.render("index");
 })
@@ -122,7 +121,7 @@ app.post("/create", (req, res, next) => {
             errors
         });
     }
-    let id = idGenerator(24)
+    let id = idGenerator(24);
     boards[id] = new Board({
         firstPlayerColor: req.body.firstPlayerColor,
         secondPlayerColor: req.body.secondPlayerColor,
@@ -131,7 +130,7 @@ app.post("/create", (req, res, next) => {
         boardSize: req.body.boardSize,
         verticalBorderColor: req.body.firstPlayerColor,
         horizontalBorderColor: req.body.secondPlayerColor
-    })
+    });
     boards.count++;
     res.redirect(`/${id}`);
 })
@@ -146,7 +145,6 @@ function getPlayerConfig(connectedSockets, id, board) {
         message = "Waiting for someone to join...";
         color = "black";
     }
-
     else {
         if ([...connectedSockets].indexOf(id) == board.getTurn() % 2) {
             message = "Your Turn";
